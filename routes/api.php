@@ -1,16 +1,25 @@
 <?php
 
-// use Illuminate\Support\Facades\Route;
-// use App\Http\Controllers\API\ProductController;
-// use Illuminate\Http\Response;
-
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\ProductController;
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
 // })->middleware('auth:sanctum');
+Route::prefix('auth')->name('auth')->group(function () {
 
-// Route::apiResource('products', ProductController::class);
+    Route::post('register', [AuthController::class, 'register'])->name('register');
+    Route::post('login', [AuthController::class, 'login'])->name('login');
+    Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+    Route::middleware('jwt')->group(function () {
+        Route::post('me', [AuthController::class, 'me'])->name('me');
+        Route::post('refresh', [AuthController::class, 'refresh'])->name('refresh');
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\ProductController;
+    });
+});
 
-Route::apiResource('products', ProductController::class);
+Route::middleware('jwt')->group(function () {
+    Route::apiResource('products', ProductController::class);
+});
+
